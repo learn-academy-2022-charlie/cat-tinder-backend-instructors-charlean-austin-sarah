@@ -45,12 +45,111 @@ RSpec.describe "Cats", type: :request do
   
       # define a variable that is in the database
       cat = Cat.first
-      # assert that the item in the BD is the same we sent over
+      # assert that the item in the DB is the same we sent over
       expect(cat.name).to eq 'Mosey'
       expect(cat.age).to eq 6
       expect(cat.enjoys).to eq 'showing up randomly where she is not expected'
       expect(cat.image).to eq 'https://thiscatdoesnotexist.com/'
 
     end
+    it 'does not create a cat without a name' do
+      
+      # I need something to send to my application to have it loaded into the database
+      cat_params = {
+        cat: {
+          age: 6,
+          enjoys: 'showing up randomly where she is not expected',
+          image: 'https://thiscatdoesnotexist.com/'
+        }
+      }
+      
+      # I need to make a request to my appilcation to create the object we made
+      post '/cats', params: cat_params
+      # I need to assert that the response is correct
+        # status code
+      expect(response).to have_http_status(422)
+  
+      # define a variable that is in the database
+      cat = JSON.parse(response.body)
+      # assert that the item in the DB is the same we sent over
+     expect(cat['name']).to include "can't be blank"
+     
+    end
+    it 'does not create a cat without an age' do
+      
+      # I need something to send to my application to have it loaded into the database
+      cat_params = {
+        cat: {
+          name: 'Mosey',
+          
+          enjoys: 'showing up randomly where she is not expected',
+          image: 'https://thiscatdoesnotexist.com/'
+        }
+      }
+      
+      # I need to make a request to my appilcation to create the object we made
+      post '/cats', params: cat_params
+      # I need to assert that the response is correct
+        # status code
+      expect(response).to have_http_status(422)
+  
+      # define a variable that is in the database
+      cat = JSON.parse(response.body)
+      # assert that the item in the DB is the same we sent over
+     expect(cat['age']).to include "can't be blank"
+    end
+    it 'does not create a cat without an enjoys' do
+      
+      # I need something to send to my application to have it loaded into the database
+      cat_params = {
+        cat: {
+          name: 'Mosey',
+          
+          age: 6,
+          image: 'https://thiscatdoesnotexist.com/'
+        }
+      }
+      
+      # I need to make a request to my appilcation to create the object we made
+      post '/cats', params: cat_params
+      # I need to assert that the response is correct
+        # status code
+      expect(response).to have_http_status(422)
+  
+      # define a variable that is in the database
+      cat = JSON.parse(response.body)
+      # assert that the item in the DB is the same we sent over
+     expect(cat['enjoys']).to include "can't be blank"
+    end
   end
+  describe "PATCH /update" do
+    it "it updates a cat that exists in the database" do
+     
+      Cat.create(name: 'Mosey', age: 6, enjoys: 'showing up randomly where she is not expected', image: 'https://thiscatdoesnotexist.com/')
+
+      cat = Cat.first
+
+      # I need something to send to my application to have it loaded into the database
+      updated_cat_params = {
+              cat: {
+                name: 'Mosey',
+                age: 7,
+                enjoys: 'showing up randomly where she is not expected',
+                image: 'https://thiscatdoesnotexist.com/'
+              }
+            }
+      # I need to make a request to my appilcation to create the object we made
+      patch "/cats/#{cat.id}", params: updated_cat_params
+      # I need to assert that the response is correct
+        # status code
+      expect(response).to have_http_status(200)
+      # define a variable that is in the database
+      updated_cat = Cat.find(cat.id)
+
+      expect(cat.age).to eq 6
+      expect(updated_cat.age).to eq 7
+      # assert that the item in the DB is the same we sent over
+    end
+  end
+
 end
