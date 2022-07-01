@@ -60,3 +60,9 @@ p "Cat's Seeds worked out fine"
   - create the cors.rb file in the initializers folder
   - add the code to the cors.rb file
   $ bundle
+
+# Endpoints
+
+# Setup
+  - Stub all the restful API methods
+  
